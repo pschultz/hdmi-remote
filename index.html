@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <style>
+      html, body, .outer {
+        height: 100%;
+        font-family: 'Roboto', sans-serif;
+      }
+      html, body, div {
+        margin: 0;
+        padding: 0;
+      }
+      .outer {
+        display:flex;
+        flex-direction: column;
+        flex-grow: 1;
+      }
+      .error {
+        white-space: pre-line;
+        text-align: center;
+        line-height: 1.5em;
+        font-size: 16px;
+        padding: .5em;
+        height: 56px;
+        color: red;
+      }
+      .inner {
+        display:flex;
+        flex-direction: row;
+        flex-grow: 1;
+        align-items: stretch;
+        align-content: stretch;
+      }
+      button {
+        flex-grow: 1;
+        flex-shrink: 0;
+        margin: 3vw;
+        font-size: 130px;
+      }
+      [data-state=red] {
+        box-shadow: 0px 0px 41px 3px rgba(255, 0, 0, 1);
+      }
+      [data-state=green] {
+        box-shadow: 0px 0px 41px 3px rgba(0, 255, 0, 1);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="outer">
+      <div class="error"></div>
+      <div class="inner">
+        <button value=1 class="green">1</button>
+        <button value=2 class="red">2</button>
+      </div>
+      <div class="inner">
+        <button value=3>3</button>
+        <button value=4>4</button>
+      </div>
+    </div>
+    <script>
+      (function() {
+        var req = null;
+        var err = document.querySelector(".error")
+
+        document.querySelectorAll("button").forEach(function(button) {
+          button.addEventListener("click", function() {
+            if (req !== null) {
+              req.abort()
+            }
+
+            err.innerText = ""
+
+            req = new XMLHttpRequest()
+            req.timeout = 1000 /*ms*/
+            req.addEventListener("load", function(e) {
+              if (req.status === 200) {
+                button.dataset["state"] = "green"
+              } else {
+                button.dataset["state"] = "red"
+
+                err.innerText = req.status.toString() + " " + req.statusText + "\n" + req.responseText
+                console.error("request failed:", req)
+              }
+
+              setTimeout(function() {
+                button.dataset["state"] = ""
+              }, 1000)
+            })
+            req.open("POST", "/switch/"+button.value.toString())
+            req.send()
+          })
+        })
+      })()
+    </script>
+  </body>
+</html>

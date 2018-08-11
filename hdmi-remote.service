@@ -1,0 +1,10 @@
+[Unit]
+Description=HDMI Switch Remote
+Documentation=https://github.com/pschultz/hdmi-remote
+
+[Service]
+ExecStart=/usr/local/bin/hdmi-remote
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
